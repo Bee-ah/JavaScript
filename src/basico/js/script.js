@@ -1,43 +1,47 @@
-function calcularMedia( notas ) {
-
-    let soma = 0;
-    for( c = 0; c < notas.length; c++) {
-        soma += notas[c];
+//classe : calculo 
+class calculo{
+    constructor(){
+        this.valores = []
     }
+    preenchendo(... valordado){ //uma função que preenche o array com valores que são dados
+        valordado.forEach(
+            lancamento => this.valores.push(lancamento)
+        )
 
-    media = soma / notas.length;
+    }
+    calculamedia(){
+        let soma = 0
+        let index = 0
+        this.valores.forEach(valor => {
+            soma += valor;
+            index++ ;
+        })
+        return soma / index;
 
-    return media;
-
+    }
+    aprovacao(resultado){
+        let condicao =resultado >= 80  ? "aprovado" : "reprovado"
+        return condicao
+    }
 }
-
-let media; // escopo global
-
-function aprovacao( notas ) {
-
-    let media = calcularMedia( notas ); // escopo da função
-
-    let condicao = media >= 8 ? "aprovado" : "reprovado";
-
-    return 'Média: ' + media + ' - Resultado: ' + condicao;
-
-}
+// criação do objeto e teste com valores
+const teste = new calculo()
+teste.preenchendo(20,30,50,10)
+console.log('O valor da media é: ' + teste.calculamedia()) 
+console.log('Você foi : ' + teste.aprovacao(teste.calculamedia())) 
 
 
 // Função Recursivas
-
-function contagemRegressiva(numero){
-
-    console.log(numero);  
-    
+const contagemRegressiva = (numero) => {
+    console.log(numero)
     let proximoNumero = numero - 1;
 
     if(proximoNumero > 0)
         contagemRegressiva(proximoNumero);
-
 }
 
-// contagemRegressiva(50);
+
+
 
 /* 
  * Formulário envio de dados para cálculo da média 
@@ -45,8 +49,8 @@ function contagemRegressiva(numero){
 const formulario1 = document.getElementById('formulario-01');
 
 if(formulario1)
-    formulario1.addEventListener('submit', function( evento ){
-
+    formulario1.addEventListener('submit', evento => {
+        const media = new calculo()
         evento.preventDefault();
         evento.stopPropagation();
 
@@ -55,7 +59,6 @@ if(formulario1)
         }
         
         let dados = new FormData(this);
-
         let notas = [];
 
         for(let key of dados.keys()) {
@@ -69,26 +72,30 @@ if(formulario1)
         }
 
         console.log(notas);
-
-        texto = aprovacao(notas)
+        media.preenchendo(notas);
+        texto = media.aprovacao(media.calculamedia())
 
         document.getElementById('resultado').innerHTML = texto;
 
     });
 
+//para verificar preenchimento de campos
 
 function validaCampo(elemento){
 
-    elemento.addEventListener('focusout', function(event) {
+    elemento.addEventListener('focusout', event => {
 
         event.preventDefault();
-
+        //campo vazio:
         if(this.value == ""){
+            // pega a o elemento que tem class='.mensagem'
             document.querySelector('.mensagem').innerHTML = "verifique o preenchimento dos campos em vermelho";
             this.classList.add('erro');
             this.parentNode.classList.add('erro');
             return false;
-        } else {
+        }
+        //campo preenchido 
+        else {
             document.querySelector('.mensagem').innerHTML = "";
             this.classList.remove('erro');
             this.parentNode.classList.remove('erro');
@@ -100,17 +107,17 @@ function validaCampo(elemento){
 
 function validaCampoNumerico(elemento){
 
-    elemento.addEventListener('focusout', function(event) {
+    elemento.addEventListener('focusout', event => {
 
         event.preventDefault();
 
         let numero = this.value.match(/^[\d]5-[\d]3/) ? this.value.replace(/-/, "") : this.value; 
 
-        if(numero != "" && numero.match(/[0-9]*/) && numero >= 0 && numero <= 10){
+        if(numero != "" && numero.match(/[0-9]*/) && numero >= 0 && numero <= 10){ //quando atende ao exigido
             document.querySelector('.mensagem').innerHTML = "";
             this.classList.remove('erro');
             this.parentNode.classList.remove('erro');
-        } else {
+        } else { //quando está errado
             document.querySelector('.mensagem').innerHTML = "verifique o preenchimento dos campos em destaque";
             this.classList.add('erro');
             this.parentNode.classList.add('erro');
@@ -127,13 +134,16 @@ function validaEmail(elemento){
     elemento.addEventListener('focusout', function(event) {
 
         event.preventDefault();
-
+        //notação literal:ideal quando é constante
         const emailValido = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?/i;
-        if(this.value.match(emailValido)) {
+        //notação com construtor: ideal quando o padrão é mudado, ou quando não se sabe o padrão
+        // const emailValido = new RegeExp('/^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?/', i)
+
+        if(this.value.match(emailValido)) { //quando o email corresponde ao padrão
             document.querySelector('.mensagem').innerHTML = "";
             this.classList.remove('erro');
             this.parentNode.classList.remove('erro');
-        } else {
+        } else { //quando o email digitado não corresponde ao padrão emailValido
             document.querySelector('.mensagem').innerHTML = "verifique o preenchimento dos campos em destaque";
             this.classList.add('erro');
             this.parentNode.classList.add('erro');
@@ -144,12 +154,11 @@ function validaEmail(elemento){
 
 }
 
-
 let camposObrigatorios = document.querySelectorAll('input.obrigatorio');
 let camposNumericos = document.querySelectorAll('input.numero');
 let camposEmail = document.querySelectorAll('input.email');
 
-for( let emFoco of camposObrigatorios) {
+for( let emFoco of camposObrigatorios) { //exuta um loop, aplicavel em Arrays, strings, Maps , NodeLists
     validaCampo(emFoco);
 }
 
